@@ -175,7 +175,7 @@ class UPath(Path):
         if not parsed_url.path:
             parsed_url = parsed_url._replace(path="/")  # ensure path has root
 
-        for key in ["scheme", "netloc"]:
+        for key in ["scheme", "netloc", "query", "fragment"]:
             val = kwargs.get(key)
             if val:
                 parsed_url = parsed_url._replace(**{key: val})
@@ -235,11 +235,14 @@ class UPath(Path):
         if not url:
             scheme: str = kwargs.get("scheme", "file")
             netloc: str = kwargs.get("netloc", "")
+            query: str = kwargs.get("query", "")
+            fragment: str = kwargs.get("fragment", "")
         else:
-            scheme, netloc = url.scheme, url.netloc
-        scheme = scheme + ":"
-        netloc = "//" + netloc if netloc else ""
-        formatted = scheme + netloc + path
+            scheme = url.scheme
+            netloc = url.netloc
+            query = url.query
+            fragment = url.fragment
+        formatted = urlunsplit((scheme, netloc, path, query, fragment))
         return formatted
 
     @property
